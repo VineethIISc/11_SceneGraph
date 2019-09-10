@@ -1,0 +1,14 @@
+#version 330 core
+
+layout(location = 0) in vec3 position;
+layout(location = 4) in mat4 transMat;
+
+uniform mat4 ModelViewProjectionMatrix;
+
+out vec4 outColor;
+
+void main()
+{
+		gl_Position = ModelViewProjectionMatrix * transMat * vec4(position, 1.0);	
+		outColor = gl_Position;
+}

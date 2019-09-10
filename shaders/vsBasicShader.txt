@@ -1,0 +1,62 @@
+#version 330 core
+
+// Position of vertex is retrieved 
+layout(location = 0) in vec3 position;
+
+// Normal per vertex is retrieved
+layout(location = 1) in vec3 normal;
+
+// Color per vertices
+uniform vec3 color;
+
+// Model Matrix
+uniform mat4 ModelMatrix;
+
+// Model View Projection Matrix
+uniform mat4 ModelViewProjectionMatrix;
+
+// Light structure
+struct Light
+{
+	vec3 LightPosition;
+	vec3 LightColor;
+	float LightIntensity;
+};
+
+// Light as uniform variable
+uniform Light LightInScene;
+
+// Outputs from this shader
+vec4 TransNormals;
+vec3 LightDirection;
+out vec4 inColor;
+
+void main()
+{
+	// Tranformed position of vertex
+	vec4 tranPosition = ModelMatrix * vec4(position, 1.0);
+	gl_Position = ModelViewProjectionMatrix * vec4(position, 1.0);
+	
+	// Apply tranformation to normals and normalize
+	TransNormals = ModelMatrix * vec4(normal, 1.0);
+	normalize(TransNormals.xyz);
+	
+	// Find the light direction per vertex and normalize
+	LightDirection = tranPosition.xyz - LightInScene.LightPosition;
+	normalize(LightDirection);
+	
+	// Find the angle ( diffuse factor ) between normal and light direction
+	float angle = dot(normalize(LightDirection), normalize(TransNormals.xyz));
+	
+	// If angle is obtuse then face should lit otherwise face is dark
+	if( angle > 0.0)
+	{
+		// Color output
+		inColor = vec4(LightInScene.LightColor * angle, 1.0);
+	}
+	else 
+	{
+		// Color output is black
+		inColor = vec4(0.0, 0.0, 0.0, 0.0);
+	}
+}

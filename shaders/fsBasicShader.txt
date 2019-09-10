@@ -1,0 +1,14 @@
+#version 330 core
+
+// Input from previous shader
+in vec4 inColor;
+
+// Output from this shader
+out vec4 Frag_color;
+
+void main()
+{
+
+	Frag_color = inColor;
+	
+}
